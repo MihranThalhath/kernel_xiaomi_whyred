@@ -168,6 +168,13 @@ static void mdss_mdp_kcal_update_pcc(struct kcal_lut_data *lut_data)
 	u32 copyback = 0;
 	struct mdp_pcc_cfg_data pcc_config;
 
+	lut_data->red = lut_data->red < lut_data->minimum ?
+		lut_data->minimum : lut_data->red;
+	lut_data->green = lut_data->green < lut_data->minimum ?
+		lut_data->minimum : lut_data->green;
+	lut_data->blue = lut_data->blue < lut_data->minimum ?
+		lut_data->minimum : lut_data->blue;
+
 	memset(&pcc_config, 0, sizeof(struct mdp_pcc_cfg_data));
 
 	pcc_config.block = MDP_LOGICAL_BLOCK_DISP_0;
@@ -266,6 +273,7 @@ static void mdss_mdp_kcal_update_igc(struct kcal_lut_data *lut_data)
 	mdss_mdp_igc_lut_config(&igc_config, &copyback, copy_from_kernel);
 }
 
+<<<<<<< HEAD
 static void mdss_mdp_kcal_check_pcc(struct kcal_lut_data *lut_data)
 {
 	lut_data->red = lut_data->red < lut_data->minimum ?
@@ -276,6 +284,8 @@ static void mdss_mdp_kcal_check_pcc(struct kcal_lut_data *lut_data)
 		lut_data->minimum : lut_data->blue;
 }
 
+=======
+>>>>>>> b3abd0f... msm: mdss: KCAL: Queue changes when panel is powered off
 static ssize_t kcal_store(struct device *dev, struct device_attribute *attr,
 						const char *buf, size_t count)
 {
@@ -291,8 +301,11 @@ static ssize_t kcal_store(struct device *dev, struct device_attribute *attr,
 	lut_data->green = kcal_g;
 	lut_data->blue = kcal_b;
 
+<<<<<<< HEAD
 	mdss_mdp_kcal_check_pcc(lut_data);
 
+=======
+>>>>>>> b3abd0f... msm: mdss: KCAL: Queue changes when panel is powered off
 	if (mdss_mdp_kcal_is_panel_on())
 		mdss_mdp_kcal_update_pcc(lut_data);
 	else
@@ -325,7 +338,6 @@ static ssize_t kcal_min_store(struct device *dev,
 
 	lut_data->minimum = kcal_min;
 
-	mdss_mdp_kcal_check_pcc(lut_data);
 
 	if (mdss_mdp_kcal_is_panel_on())
 		mdss_mdp_kcal_update_pcc(lut_data);
@@ -576,22 +588,17 @@ static int kcal_ctrl_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, lut_data);
 
-	lut_data->enable = 0x1;
-	lut_data->red = DEF_PCC;
-	lut_data->green = DEF_PCC;
-	lut_data->blue = DEF_PCC;
-	lut_data->minimum = 0x23;
-	lut_data->invert = 0x0;
-	lut_data->hue = 0x0;
+
+	lut_data->red = lut_data->green = lut_data->blue = NUM_QLUT;
+	lut_data->minimum = 35;
+	lut_data->enable = 1;
+	lut_data->invert = 0;
 	lut_data->sat = DEF_PA;
 	lut_data->val = DEF_PA;
 	lut_data->cont = DEF_PA;
 
 	lut_data->queue_changes = false;
 
-	mdss_mdp_kcal_update_pcc(lut_data);
-	mdss_mdp_kcal_update_pa(lut_data);
-	mdss_mdp_kcal_update_igc(lut_data);
 
 #if defined(CONFIG_MMI_PANEL_NOTIFICATIONS)
 	lut_data->panel_nb.display_on = mdss_mdp_kcal_update_queue;
@@ -599,7 +606,9 @@ static int kcal_ctrl_probe(struct platform_device *pdev)
 	ret = mmi_panel_register_notifier(&lut_data->panel_nb);
 	if (ret) {
 		pr_err("%s: unable to register MMI notifier\n", __func__);
-		return ret;
+
+		goto out_free_mem;
+
 	}
 #elif defined(CONFIG_FB)
 	lut_data->dev = pdev->dev;
@@ -607,7 +616,8 @@ static int kcal_ctrl_probe(struct platform_device *pdev)
 	ret = fb_register_client(&lut_data->panel_nb);
 	if (ret) {
 		pr_err("%s: unable to register fb notifier\n", __func__);
-		return ret;
+		goto out_free_mem;
+
 	}
 #endif
 
@@ -621,17 +631,17 @@ static int kcal_ctrl_probe(struct platform_device *pdev)
 	ret |= device_create_file(&pdev->dev, &dev_attr_kcal_cont);
 	if (ret) {
 		pr_err("%s: unable to create sysfs entries\n", __func__);
-		goto out_notifier;
+
+		goto out_free_mem;
+
 	}
 
 	return 0;
 
-out_notifier:
-#if defined(CONFIG_MMI_PANEL_NOTIFICATIONS)
-	mmi_panel_unregister_notifier(&lut_data->panel_nb);
-#elif defined(CONFIG_FB)
-	fb_unregister_client(&lut_data->panel_nb);
-#endif
+
+out_free_mem:
+	kfree(lut_data);
+
 	return ret;
 }
 
@@ -653,6 +663,9 @@ static int kcal_ctrl_remove(struct platform_device *pdev)
 #elif defined(CONFIG_FB)
 	fb_unregister_client(&lut_data->panel_nb);
 #endif
+
+
+	kfree(lut_data);
 
 	return 0;
 }
