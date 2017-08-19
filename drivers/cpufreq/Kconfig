@@ -135,6 +135,7 @@ config CPU_FREQ_DEFAULT_GOV_SCHED
 	  cpu frequency using CPU utilization estimates from the
 	  scheduler.
 
+
 config CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
 	bool "schedutil"
 	depends on SMP
@@ -168,6 +169,17 @@ config CPU_FREQ_DEFAULT_GOV_CULTIVATION
 	select CPU_FREQ_GOV_CULTIVATION
 	help
 	Use the CPUFreq governor 'cultivation' as default.
+
+
+config CPU_FREQ_DEFAULT_GOV_ALUCARD
+	bool "alucard"
+	select CPU_FREQ_GOV_ALUCARD
+	help
+	  Use the CPUFreq governor 'alucard' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'alucard' governor for latency-sensitive workloads.
+
 
 endchoice
 
@@ -345,6 +357,20 @@ config CPU_WAKE_BOOST
 	  is powered on, as reported by the framebuffer chain notifier. This helps
 	  make the display power on faster, as well as ensures good performance
 	  immediately after powering on the display.
+
+config CPU_FREQ_GOV_ALUCARD
+	bool "'alucard' cpufreq policy governor"
+	help
+	  'alucard' - This driver adds a dynamic cpufreq policy governor
+	  designed for latency-sensitive workloads.
+
+	  This governor attempts to reduce the latency of clock
+	  increases so that the system is more responsive to
+	  alucard workloads.
+
+	  For details, take a look at linux/Documentation/cpu-freq.
+
+	  If in doubt, say N.
 
 comment "CPU frequency scaling drivers"
 
