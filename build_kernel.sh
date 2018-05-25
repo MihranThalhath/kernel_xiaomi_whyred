@@ -29,7 +29,10 @@ rm -f ${ANYKERNEL_DIR}/Image.gz*
 rm -f ${ANYKERNEL_DIR}/zImage*
 rm -f ${ANYKERNEL_DIR}/dtb*
 cp $OBJ_DIR/arch/arm64/boot/Image.gz-dtb ${ANYKERNEL_DIR}/zImage-dtb
-cp $OBJ_DIR/drivers/staging/qcacld-3.0/wlan.ko ${ANYKERNEL_DIR}/modules/qca_cld3_wlan.ko
+rm -rf ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules
+mkdir -p ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules
+cp $OBJ_DIR/drivers/staging/qcacld-3.0/wlan.ko ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules/qca_cld3_wlan.ko
+cp $OBJ_DIR/fs/exfat/exfat.ko ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules/exfat.ko
 cd ${ANYKERNEL_DIR}
 rm *.zip
 zip -r9 ZeurionX-$DATE.zip * -x README ZeurionX-$DATE.zip
