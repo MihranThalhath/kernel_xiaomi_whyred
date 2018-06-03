@@ -11336,7 +11336,6 @@ out:
 	hdd_deinit();
 err_hdd_init:
 	pld_deinit();
-	wlan_hdd_state_ctrl_param_destroy();
 err_dev_state:
 	return ret;
 }
