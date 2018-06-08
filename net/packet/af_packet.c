@@ -1731,12 +1731,6 @@ static int fanout_add(struct sock *sk, u16 id, u16 type_flags)
 	}
 
 out:
-	if (err && rollover) {
-		kfree(rollover);
-		po->rollover = NULL;
-	}
-
-out:
 	kfree(rollover);
 	mutex_unlock(&fanout_mutex);
 	return err;
