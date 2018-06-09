@@ -16,7 +16,7 @@ fi
 make O=${OBJ_DIR} clean
 make O=${OBJ_DIR} mrproper
 make ARCH=arm64 O=$OBJ_DIR CROSS_COMPILE=${TOOLCHAIN} $DEFCONFIG
-make -j$(nproc --all) ${MAKE_OPTS}
+make -j4 ${MAKE_OPTS}
 
 rm -f ${ANYKERNEL_DIR}/Image.gz*
 rm -f ${ANYKERNEL_DIR}/zImage*
