@@ -1,10 +1,10 @@
 DEFCONFIG=noname_defconfig
-OBJ_DIR=`pwd`/.obj
+OBJ_DIR=`pwd`/out
 ANYKERNEL_DIR=/home/mihran/anykernel
-TOOLCHAIN=/home/mihran/aarch64-linux-android-4.9/bin/aarch64-linux-androidkernel-
+TOOLCHAIN=/home/mihran/aarch64-linux-android-4.9/bin/aarch64-linux-android-
 CLANG_PATH=/home/mihran/linux-x86/clang-r328903/bin/clang
 CLANG_TRIPLE=aarch64-linux-gnu-
-ZIP_NAME="NoName-r1.2"
+ZIP_NAME="NoName-r1.3"
 DATE=$(date +"%m-%d-%y")
 export KBUILD_BUILD_USER="mihran"
 export KBUILD_BUILD_HOST="northkorea"
@@ -13,6 +13,11 @@ MAKE_OPTS="ARCH=arm64 O=$OBJ_DIR CC=${CLANG_PATH} CLANG_TRIPLE=${CLANG_TRIPLE} C
 if [ ! -d ${OBJ_DIR} ]; then
     mkdir ${OBJ_DIR}
 fi
+
+export CCACHE_DIR=/home/ccache/mihran
+#ccache -C
+export USE_CCACHE=1
+/home/mihran/ccache -M 50G
 make O=${OBJ_DIR} clean
 make O=${OBJ_DIR} mrproper
 make ARCH=arm64 O=$OBJ_DIR CROSS_COMPILE=${TOOLCHAIN} $DEFCONFIG
@@ -24,8 +29,8 @@ rm -f ${ANYKERNEL_DIR}/dtb*
 cp $OBJ_DIR/arch/arm64/boot/Image.gz-dtb ${ANYKERNEL_DIR}/zImage-dtb
 rm -rf ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules
 mkdir -p ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules
-cp $OBJ_DIR/drivers/staging/qcacld-3.0/wlan.ko ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules/qca_cld3_wlan.ko
-cp $OBJ_DIR/fs/exfat/exfat.ko ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules/exfat.ko
+#cp $OBJ_DIR/drivers/staging/qcacld-3.0/wlan.ko ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules/qca_cld3_wlan.ko
+#cp $OBJ_DIR/fs/exfat/exfat.ko ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules/exfat.ko
 cd ${ANYKERNEL_DIR}
 rm *.zip
 zip -r9 ${ZIP_NAME}.zip * -x README ${ZIP_NAME}.zip
