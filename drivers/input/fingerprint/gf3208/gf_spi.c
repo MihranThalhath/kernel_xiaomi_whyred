@@ -359,10 +359,12 @@ static irqreturn_t gf_irq(int irq, void *handle)
 		kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
 #endif
 	if (gf_dev->state_suspended) {
+		sched_set_boost(1);
 		input_report_key(gf_dev->input_dev, KEY_FINGERPRINT, 1);
 		input_sync(gf_dev->input_dev);
 		input_report_key(gf_dev->input_dev, KEY_FINGERPRINT, 0);
 		input_sync(gf_dev->input_dev);
+		sched_set_boost(0);
 	}
 
 	return IRQ_HANDLED;

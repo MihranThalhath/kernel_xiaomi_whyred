@@ -551,10 +551,12 @@ static irqreturn_t fpc1020_irq_handler(int irq, void *handle)
 	}
 */
 	if (state_suspended) {
+		sched_set_boost(1);
 		input_report_key(fpc1020->input_dev, KEY_FINGERPRINT, 1);
 		input_sync(fpc1020->input_dev);
 		input_report_key(fpc1020->input_dev, KEY_FINGERPRINT, 0);
 		input_sync(fpc1020->input_dev);
+		sched_set_boost(0);
 	}
 
 	return IRQ_HANDLED;
