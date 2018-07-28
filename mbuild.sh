@@ -4,7 +4,7 @@ ANYKERNEL_DIR=/home/mihran/anykernel
 TOOLCHAIN=/home/mihran/aarch64-linux-android-4.9/bin/aarch64-linux-android-
 CLANG_PATH=/home/mihran/linux-x86/clang-r328903/bin/clang
 CLANG_TRIPLE=aarch64-linux-gnu-
-ZIP_NAME="NoName-r1.7"
+ZIP_NAME="NoName-r1.8"
 DATE=$(date +"%m-%d-%y")
 export KBUILD_BUILD_USER="mihran"
 export KBUILD_BUILD_HOST="northkorea"
@@ -23,8 +23,8 @@ rm -f ${ANYKERNEL_DIR}/Image.gz*
 rm -f ${ANYKERNEL_DIR}/zImage*
 rm -f ${ANYKERNEL_DIR}/dtb*
 cp $OBJ_DIR/arch/arm64/boot/Image.gz-dtb ${ANYKERNEL_DIR}/zImage-dtb
-rm -rf ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules
-mkdir -p ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules
+#rm -rf ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules
+#mkdir -p ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules
 #cp $OBJ_DIR/drivers/staging/qcacld-3.0/wlan.ko ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules/qca_cld3_wlan.ko
 #cp $OBJ_DIR/fs/exfat/exfat.ko ${ANYKERNEL_DIR}/modules/system/vendor/lib/modules/exfat.ko
 cd ${ANYKERNEL_DIR}
