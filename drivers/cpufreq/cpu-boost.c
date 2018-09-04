@@ -141,8 +141,14 @@ static int boost_adjust_notify(struct notifier_block *nb, unsigned long val,
 		ib_min = min((s->input_boost_min == UINT_MAX ?
 				policy->max : s->input_boost_min), policy->max);
 
-		if (policy->cur >= ib_min)
-			break;
+		/*
+		 * If we're not resetting the boost and if the new boosted freq
+		 * is below or equal to the current min freq, bail early
+		 */
+		if (ib_min) {
+			if (ib_min <= policy->min)
+				break;
+		}
 
 		pr_debug("CPU%u policy min before boost: %u kHz\n",
 			 cpu, policy->min);
@@ -223,7 +229,7 @@ void do_input_boost_max()
 
 	queue_delayed_work(system_power_efficient_wq,
 		&input_boost_rem, msecs_to_jiffies(
-			!input_boost_ms ? 1500 : input_boost_ms));
+			input_boost_ms < 1500 ? 1500 : input_boost_ms));
 }
 
 static void do_input_boost(struct kthread_work *work)
