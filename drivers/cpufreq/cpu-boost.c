@@ -288,6 +288,11 @@ static void cpuboost_input_event(struct input_handle *handle,
 {
 	u64 now;
 
+#ifdef CONFIG_STATE_NOTIFIER
+	if (state_suspended)
+			return;
+#endif
+
 	if (!input_boost_enabled)
 		return;
 
